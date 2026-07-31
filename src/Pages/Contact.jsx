@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Share2, User, Mail, MessageSquare, Send } from "lucide-react";
-import { Link } from "react-router-dom";
 import SocialLinks from "../components/SocialLinks";
 import Komentar from "../components/Commentar";
 import Swal from "sweetalert2";
@@ -34,37 +33,22 @@ const ContactPage = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const form = e.target;
-    const data = new FormData(form);
+    const iframe = document.getElementById("hidden-iframe");
+    iframe.onload = () => {
+      Swal.fire({
+        title: 'Berhasil!',
+        text: 'Pesan Anda telah berhasil terkirim!',
+        icon: 'success',
+        confirmButtonColor: '#6366f1',
+        timer: 2000,
+        timerProgressBar: true,
+      });
+      setFormData({ name: "", email: "", message: "" });
+      setIsSubmitting(false);
+      iframe.onload = null;
+    };
 
-    fetch("https://formsubmit.co/m.yusufaffandi76@gmail.com", {
-      method: "POST",
-      mode: "no-cors",
-      body: data,
-    }).then(() => {
-      Swal.fire({
-        title: 'Berhasil!',
-        text: 'Pesan Anda telah berhasil terkirim!',
-        icon: 'success',
-        confirmButtonColor: '#6366f1',
-        timer: 2000,
-        timerProgressBar: true
-      });
-      setFormData({ name: "", email: "", message: "" });
-      setIsSubmitting(false);
-    }).catch(() => {
-      // no-cors selalu resolve, tidak pernah catch
-      Swal.fire({
-        title: 'Berhasil!',
-        text: 'Pesan Anda telah berhasil terkirim!',
-        icon: 'success',
-        confirmButtonColor: '#6366f1',
-        timer: 2000,
-        timerProgressBar: true
-      });
-      setFormData({ name: "", email: "", message: "" });
-      setIsSubmitting(false);
-    });
+    e.target.submit();
   };
 
   return (
@@ -118,13 +102,18 @@ const ContactPage = () => {
               <Share2 className="w-10 h-10 text-[#6366f1] opacity-50" />
             </div>
 
-            <form 
+            <iframe name="hidden-iframe" id="hidden-iframe" style={{ display: "none" }} title="hidden"></iframe>
+            <form
               onSubmit={handleSubmit}
+              action="https://formsubmit.co/m.yusufaffandi76@gmail.com"
+              method="POST"
+              target="hidden-iframe"
               className="space-y-6"
             >
               <input type="hidden" name="_subject" value="Pesan Baru dari Website Portfolio" />
               <input type="hidden" name="_captcha" value="false" />
               <input type="hidden" name="_template" value="table" />
+              <input type="hidden" name="_next" value="https://portofolio-aqro.vercel.app" />
               <div
                 data-aos="fade-up"
                 data-aos-delay="100"
