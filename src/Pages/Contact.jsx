@@ -6,7 +6,6 @@ import Komentar from "../components/Commentar";
 import Swal from "sweetalert2";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import emailjs from '@emailjs/browser';
 
 
 const ContactPage = () => {
@@ -45,16 +44,21 @@ const ContactPage = () => {
     });
 
     try {
-      await emailjs.send(
-        'service_227fzrb',
-        'template_7n07pvw',
-        {
-          from_name: formData.name,
-          from_email: formData.email,
-          message: formData.message,
-        },
-        '8M35QYpPWsR7TQ-Fs'
-      );
+      const formSubmitUrl = "https://formsubmit.co/m.yusufaffandi76@gmail.com";
+
+      const submitData = new FormData();
+      submitData.append('name', formData.name);
+      submitData.append('email', formData.email);
+      submitData.append('message', formData.message);
+      submitData.append('_subject', 'Pesan Baru dari Website Portfolio');
+      submitData.append('_captcha', 'false');
+      submitData.append('_template', 'table');
+
+      await fetch(formSubmitUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: submitData,
+      });
 
       Swal.fire({
         title: 'Berhasil!',
