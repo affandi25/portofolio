@@ -43,48 +43,33 @@ const ContactPage = () => {
       }
     });
 
-    try {
-      const formSubmitUrl = "https://formsubmit.co/m.yusufaffandi76@gmail.com";
+    const formSubmitUrl = "https://formsubmit.co/m.yusufaffandi76@gmail.com";
 
-      const submitData = new FormData();
-      submitData.append('name', formData.name);
-      submitData.append('email', formData.email);
-      submitData.append('message', formData.message);
-      submitData.append('_subject', 'Pesan Baru dari Website Portfolio');
-      submitData.append('_captcha', 'false');
-      submitData.append('_template', 'table');
+    const submitData = new FormData();
+    submitData.append('name', formData.name);
+    submitData.append('email', formData.email);
+    submitData.append('message', formData.message);
+    submitData.append('_subject', 'Pesan Baru dari Website Portfolio');
+    submitData.append('_captcha', 'false');
+    submitData.append('_template', 'table');
 
-      await fetch(formSubmitUrl, {
-        method: 'POST',
-        mode: 'no-cors',
-        body: submitData,
-      });
+    await fetch(formSubmitUrl, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: submitData,
+    });
 
-      Swal.fire({
-        title: 'Berhasil!',
-        text: 'Pesan Anda telah berhasil terkirim!',
-        icon: 'success',
-        confirmButtonColor: '#6366f1',
-        timer: 2000,
-        timerProgressBar: true
-      });
+    Swal.fire({
+      title: 'Berhasil!',
+      text: 'Pesan Anda telah berhasil terkirim!',
+      icon: 'success',
+      confirmButtonColor: '#6366f1',
+      timer: 2000,
+      timerProgressBar: true
+    });
 
-      setFormData({
-        name: "",
-        email: "",
-        message: "",
-      });
-
-    } catch (error) {
-      Swal.fire({
-        title: 'Gagal!',
-        text: 'Terjadi kesalahan. Silakan coba lagi nanti.',
-        icon: 'error',
-        confirmButtonColor: '#6366f1'
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    setFormData({ name: "", email: "", message: "" });
+    setIsSubmitting(false);
   };
 
   return (
