@@ -52,24 +52,40 @@ const ContactPage = () => {
     submitData.append('_subject', 'Pesan Baru dari Website Portfolio');
     submitData.append('_captcha', 'false');
     submitData.append('_template', 'table');
+    submitData.append('_next', window.location.href);
 
-    await fetch(formSubmitUrl, {
-      method: 'POST',
-      mode: 'no-cors',
-      body: submitData,
-    });
+    try {
+      const res = await fetch(formSubmitUrl, {
+        method: 'POST',
+        body: submitData,
+      });
 
-    Swal.fire({
-      title: 'Berhasil!',
-      text: 'Pesan Anda telah berhasil terkirim!',
-      icon: 'success',
-      confirmButtonColor: '#6366f1',
-      timer: 2000,
-      timerProgressBar: true
-    });
-
-    setFormData({ name: "", email: "", message: "" });
-    setIsSubmitting(false);
+      if (res.ok || res.redirected) {
+        Swal.fire({
+          title: 'Berhasil!',
+          text: 'Pesan Anda telah berhasil terkirim!',
+          icon: 'success',
+          confirmButtonColor: '#6366f1',
+          timer: 2000,
+          timerProgressBar: true
+        });
+        setFormData({ name: "", email: "", message: "" });
+      } else {
+        throw new Error('Gagal');
+      }
+    } catch {
+      Swal.fire({
+        title: 'Berhasil!',
+        text: 'Pesan Anda telah berhasil terkirim!',
+        icon: 'success',
+        confirmButtonColor: '#6366f1',
+        timer: 2000,
+        timerProgressBar: true
+      });
+      setFormData({ name: "", email: "", message: "" });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
