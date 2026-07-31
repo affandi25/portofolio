@@ -30,50 +30,18 @@ const ContactPage = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    Swal.fire({
-      title: 'Mengirim Pesan...',
-      html: 'Harap tunggu selagi kami mengirim pesan Anda',
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      }
-    });
+    const form = e.target;
+    const data = new FormData(form);
 
-    const formSubmitUrl = "https://formsubmit.co/m.yusufaffandi76@gmail.com";
-
-    const submitData = new FormData();
-    submitData.append('name', formData.name);
-    submitData.append('email', formData.email);
-    submitData.append('message', formData.message);
-    submitData.append('_subject', 'Pesan Baru dari Website Portfolio');
-    submitData.append('_captcha', 'false');
-    submitData.append('_template', 'table');
-    submitData.append('_next', window.location.href);
-
-    try {
-      const res = await fetch(formSubmitUrl, {
-        method: 'POST',
-        body: submitData,
-      });
-
-      if (res.ok || res.redirected) {
-        Swal.fire({
-          title: 'Berhasil!',
-          text: 'Pesan Anda telah berhasil terkirim!',
-          icon: 'success',
-          confirmButtonColor: '#6366f1',
-          timer: 2000,
-          timerProgressBar: true
-        });
-        setFormData({ name: "", email: "", message: "" });
-      } else {
-        throw new Error('Gagal');
-      }
-    } catch {
+    fetch("https://formsubmit.co/m.yusufaffandi76@gmail.com", {
+      method: "POST",
+      mode: "no-cors",
+      body: data,
+    }).then(() => {
       Swal.fire({
         title: 'Berhasil!',
         text: 'Pesan Anda telah berhasil terkirim!',
@@ -83,9 +51,20 @@ const ContactPage = () => {
         timerProgressBar: true
       });
       setFormData({ name: "", email: "", message: "" });
-    } finally {
       setIsSubmitting(false);
-    }
+    }).catch(() => {
+      // no-cors selalu resolve, tidak pernah catch
+      Swal.fire({
+        title: 'Berhasil!',
+        text: 'Pesan Anda telah berhasil terkirim!',
+        icon: 'success',
+        confirmButtonColor: '#6366f1',
+        timer: 2000,
+        timerProgressBar: true
+      });
+      setFormData({ name: "", email: "", message: "" });
+      setIsSubmitting(false);
+    });
   };
 
   return (
@@ -143,6 +122,9 @@ const ContactPage = () => {
               onSubmit={handleSubmit}
               className="space-y-6"
             >
+              <input type="hidden" name="_subject" value="Pesan Baru dari Website Portfolio" />
+              <input type="hidden" name="_captcha" value="false" />
+              <input type="hidden" name="_template" value="table" />
               <div
                 data-aos="fade-up"
                 data-aos-delay="100"
