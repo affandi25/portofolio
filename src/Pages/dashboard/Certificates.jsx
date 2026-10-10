@@ -32,7 +32,7 @@ const CertCard = ({ cert, onDelete }) => {
           <div className="w-full aspect-[16/11.5] bg-white/5 animate-pulse" />
         )}
         <img
-          src={cert.Img}
+          src={cert.Img || cert.img}
           alt="Certificate"
           onLoad={() => setImgLoaded(true)}
           className={`w-full aspect-[16/11.5] object-cover group-hover:scale-105 transition-transform duration-500 ${imgLoaded ? 'block' : 'hidden'}`}
@@ -63,7 +63,11 @@ export default function Certificates() {
   const fetchCerts = async () => {
     setLoading(true)
     const { data } = await supabase.from('certificates').select('*').order('created_at', { ascending: false })
-    setCerts(data || [])
+    const formatted = (data || []).map(c => ({
+      ...c,
+      Img: c.img || c.Img || ''
+    }))
+    setCerts(formatted)
     setLoading(false)
   }
 
@@ -81,7 +85,7 @@ export default function Certificates() {
     const fileName = `cert-${Date.now()}-${file.name}`
     await supabase.storage.from('certificate-images').upload(fileName, file)
     const { data } = supabase.storage.from('certificate-images').getPublicUrl(fileName)
-    await supabase.from('certificates').insert({ Img: data.publicUrl })
+    await supabase.from('certificates').insert({ img: data.publicUrl })
     setFile(null); setPreview(null); setUploading(false)
     fetchCerts()
   }

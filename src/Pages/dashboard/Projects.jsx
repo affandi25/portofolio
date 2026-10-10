@@ -73,34 +73,40 @@ const SkeletonCard = () => (
 
 const ProjectCard = ({ project, onDelete, onEdit }) => {
   const [imgLoaded, setImgLoaded] = useState(false);
+  const title = project.Title || project.title || "";
+  const description = project.Description || project.description || "";
+  const img = project.Img || project.img || "";
+  const techStack = project.TechStack || project.tech_stack || [];
+  const link = project.Link || project.link || "";
+  const github = project.Github || project.github || "";
 
   return (
     <Card>
       <div className="p-4 flex flex-col h-full">
-        {project.Img && (
+        {img && (
           <div className="w-full aspect-[16/8] rounded-xl mb-4 border border-white/8 overflow-hidden bg-white/5">
             {!imgLoaded && (
               <div className="w-full h-full animate-pulse bg-white/5" />
             )}
             <img
-              src={project.Img}
-              alt={project.Title}
+              src={img}
+              alt={title}
               onLoad={() => setImgLoaded(true)}
               className={`w-full h-full object-cover transition-opacity duration-300 ${imgLoaded ? "opacity-100" : "opacity-0 absolute"}`}
             />
           </div>
         )}
         <h3 className="font-semibold text-white text-sm mb-1">
-          {project.Title}
+          {title}
         </h3>
-        {project.Description && (
+        {description && (
           <p className="text-gray-400 text-xs mb-3 line-clamp-2 leading-relaxed">
-            {project.Description}
+            {description}
           </p>
         )}
-        {project.TechStack?.length > 0 && (
+        {techStack?.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mb-3">
-            {project.TechStack.map((t) => (
+            {techStack.map((t) => (
               <span
                 key={t}
                 className="px-2 py-0.5 rounded-full bg-indigo-500/15 border border-indigo-500/25 text-indigo-300 text-xs"
@@ -112,9 +118,9 @@ const ProjectCard = ({ project, onDelete, onEdit }) => {
         )}
         <div className="mt-auto flex items-center justify-between gap-2 pt-2 border-t border-white/8">
           <div className="flex gap-2">
-            {project.Link && (
+            {link && (
               <a
-                href={project.Link}
+                href={link}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-1.5 rounded-lg border border-white/10 text-gray-500 hover:text-white hover:border-white/20 transition-colors"
@@ -122,9 +128,9 @@ const ProjectCard = ({ project, onDelete, onEdit }) => {
                 <ExternalLink className="w-3.5 h-3.5" />
               </a>
             )}
-            {project.Github && (
+            {github && (
               <a
-                href={project.Github}
+                href={github}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-1.5 rounded-lg border border-white/10 text-gray-500 hover:text-white hover:border-white/20 transition-colors"
@@ -190,20 +196,22 @@ const ProjectForm = ({
   submitLabel = "Save Project",
   uploading,
 }) => {
+  const initialTech = initial?.TechStack || initial?.tech_stack;
+  const initialFeat = initial?.Features || initial?.features;
   const [form, setForm] = useState({
-    Title: initial?.Title || "",
-    Description: initial?.Description || "",
-    TechStack: Array.isArray(initial?.TechStack)
-      ? initial.TechStack.join(", ")
-      : initial?.TechStack || "",
-    Features: Array.isArray(initial?.Features)
-      ? initial.Features.join(", ")
-      : initial?.Features || "",
-    Link: initial?.Link || "",
-    Github: initial?.Github || "",
+    Title: initial?.Title || initial?.title || "",
+    Description: initial?.Description || initial?.description || "",
+    TechStack: Array.isArray(initialTech)
+      ? initialTech.join(", ")
+      : initialTech || "",
+    Features: Array.isArray(initialFeat)
+      ? initialFeat.join(", ")
+      : initialFeat || "",
+    Link: initial?.Link || initial?.link || "",
+    Github: initial?.Github || initial?.github || "",
   });
   const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState(initial?.Img || null);
+  const [preview, setPreview] = useState(initial?.Img || initial?.img || null);
 
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
@@ -344,7 +352,17 @@ export default function Projects() {
       .from("projects")
       .select("*")
       .order("created_at", { ascending: false });
-    setProjects(data || []);
+    const formatted = (data || []).map((p) => ({
+      ...p,
+      Title: p.title || p.Title || "",
+      Description: p.description || p.Description || "",
+      Img: p.img || p.Img || "",
+      TechStack: p.tech_stack || p.TechStack || [],
+      Features: p.features || p.Features || [],
+      Link: p.link || p.Link || "",
+      Github: p.github || p.Github || "",
+    }));
+    setProjects(formatted);
     setLoading(false);
   };
 
@@ -365,18 +383,21 @@ export default function Projects() {
     setUploading(true);
     let imgUrl = "";
     if (file) imgUrl = await uploadImage(file);
+    const techStack = form.TechStack.split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    const features = form.Features.split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+
     await supabase.from("projects").insert({
-      Title: form.Title,
-      Description: form.Description,
-      Img: imgUrl,
-      TechStack: form.TechStack.split(",")
-        .map((s) => s.trim())
-        .filter(Boolean),
-      Features: form.Features.split(",")
-        .map((s) => s.trim())
-        .filter(Boolean),
-      Link: form.Link,
-      Github: form.Github,
+      title: form.Title,
+      description: form.Description,
+      img: imgUrl,
+      tech_stack: techStack,
+      features: features,
+      link: form.Link,
+      github: form.Github,
     });
     setShowCreate(false);
     setUploading(false);
@@ -385,22 +406,25 @@ export default function Projects() {
 
   const handleEdit = async (form, file) => {
     setUploading(true);
-    let imgUrl = editProject.Img || "";
+    let imgUrl = editProject.Img || editProject.img || "";
     if (file) imgUrl = await uploadImage(file);
+    const techStack = form.TechStack.split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    const features = form.Features.split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+
     await supabase
       .from("projects")
       .update({
-        Title: form.Title,
-        Description: form.Description,
-        Img: imgUrl,
-        TechStack: form.TechStack.split(",")
-          .map((s) => s.trim())
-          .filter(Boolean),
-        Features: form.Features.split(",")
-          .map((s) => s.trim())
-          .filter(Boolean),
-        Link: form.Link,
-        Github: form.Github,
+        title: form.Title,
+        description: form.Description,
+        img: imgUrl,
+        tech_stack: techStack,
+        features: features,
+        link: form.Link,
+        github: form.Github,
       })
       .eq("id", editProject.id);
     setEditProject(null);

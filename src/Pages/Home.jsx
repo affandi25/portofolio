@@ -11,7 +11,7 @@ const StatusBadge = memo(() => (
       <div className="relative px-3 sm:px-4 py-2 rounded-full bg-black/40 backdrop-blur-xl border border-white/10">
         <span className="bg-gradient-to-r from-[#6366f1] to-[#a855f7] text-transparent bg-clip-text sm:text-sm text-[0.7rem] font-medium flex items-center">
           <Sparkles className="sm:w-4 sm:h-4 w-3 h-3 mr-2 text-blue-400" />
-          Ready to Innovate
+          Ready to Learn & Innovate
         </span>
       </div>
     </div>
@@ -24,14 +24,14 @@ const MainTitle = memo(() => (
       <span className="relative inline-block">
         <span className="absolute -inset-2 bg-gradient-to-r from-[#6366f1] to-[#a855f7] blur-2xl opacity-20"></span>
         <span className="relative bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent">
-          embedded
+          Informatics
         </span>
       </span>
       <br />
       <span className="relative inline-block mt-2">
         <span className="absolute -inset-2 bg-gradient-to-r from-[#6366f1] to-[#a855f7] blur-2xl opacity-20"></span>
         <span className="relative bg-gradient-to-r from-[#6366f1] to-[#a855f7] bg-clip-text text-transparent">
-          system engineer
+          Student
         </span>
       </span>
     </h1>
@@ -76,7 +76,7 @@ const SocialLink = memo(({ icon: Icon, link, label }) => (
 const TYPING_SPEED = 100;
 const ERASING_SPEED = 50;
 const PAUSE_DURATION = 2000;
-const WORDS = ["Network & Telecom Student", "Tech Enthusiast"];
+const WORDS = ["Web & IoT Explorer", "Vibe Coding"];
 const TECH_STACK = ["React", "Javascript", "Node.js", "Tailwind"];
 const SOCIAL_LINKS = [
   {
@@ -86,7 +86,7 @@ const SOCIAL_LINKS = [
   },
   {
     icon: Linkedin,
-    link: "https://www.linkedin.com/in/muhammadyusufaffandi/",
+    link: "https://www.linkedin.com/in/muhammad-yusuf-affandi-bb898b310?utm_source=share_via&utm_content=profile&utm_medium=member_ios",
     label: "LinkedIn Profile",
   },
   {
@@ -222,9 +222,7 @@ const Home = () => {
                     data-aos="fade-up"
                     data-aos-delay="1000"
                   >
-                    fokus pada pengembangan perangkat berbasis mikrokontroler
-                    dan Internet of Things (IoT), serta memberikan solusi
-                    teknologi yang bermanfaat bagi masyarakat.
+                    Mahasiswa Teknik Informatika yang sedang belajar dan mengeksplorasi dunia web development serta IoT di sela-sela aktivitas perkuliahan.
                   </p>
 
 

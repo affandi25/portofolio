@@ -1,5 +1,5 @@
 import React, { useEffect, memo, useMemo } from "react"
-import { FileText, Code, Award, Globe, ArrowUpRight, Sparkles, UserCheck } from "lucide-react"
+import { FileText, Code, Award, GraduationCap, ArrowUpRight, Sparkles, UserCheck } from "lucide-react"
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 
@@ -114,19 +114,13 @@ const StatCard = memo(({ icon: Icon, color, value, label, description, animation
 
 const AboutPage = () => {
   // Memoized calculations
-  const { totalProjects, totalCertificates, YearExperience } = useMemo(() => {
+  const { totalProjects, totalCertificates } = useMemo(() => {
     const storedProjects = JSON.parse(localStorage.getItem("projects") || "[]");
     const storedCertificates = JSON.parse(localStorage.getItem("certificates") || "[]");
-    
-    const startDate = new Date("2021-11-06");
-    const today = new Date();
-    const experience = today.getFullYear() - startDate.getFullYear() -
-      (today < new Date(today.getFullYear(), startDate.getMonth(), startDate.getDate()) ? 1 : 0);
 
     return {
       totalProjects: storedProjects.length,
       totalCertificates: storedCertificates.length,
-      YearExperience: experience
     };
   }, []);
 
@@ -173,14 +167,14 @@ const AboutPage = () => {
       animation: "fade-up",
     },
     {
-      icon: Globe,
+      icon: GraduationCap,
       color: "from-[#6366f1] to-[#a855f7]",
-      value: YearExperience,
-      label: "Years of Experience",
-      description: "Continuous learning journey",
+      value: "5th",
+      label: "Current Semester",
+      description: "Active Student • Informatics Eng.",
       animation: "fade-left",
     },
-  ], [totalProjects, totalCertificates, YearExperience]);
+  ], [totalProjects, totalCertificates]);
 
   return (
     <div
@@ -218,8 +212,7 @@ const AboutPage = () => {
               data-aos="fade-right"
               data-aos-duration="1500"
             >
-        Saya adalah mahasiswa Teknik Informatika yang berfokus pada pengembangan Front-End. 
-Saya berfokus pada penciptaan pengalaman digital yang menarik dan selalu berupaya memberikan solusi terbaik dalam setiap proyek yang saya kerjakan.
+        Saya adalah mahasiswa Teknik Informatika dari Universitas PGRI SEMARANG yang sedang berproses mendalami dunia web development dan pengembangan IOT. Berbekal rasa ingin tahu yang tinggi, saya memanfaatkan bantuan AI sebagai sarana kolaborasi dalam mengeksplorasi dan membangun berbagai proyek digital. 
                   </p>
 
                {/* Quote Section */}
