@@ -135,41 +135,42 @@ export default function FullWidthTabs() {
 
   const fetchData = useCallback(async () => {
     try {
-      // Mengambil data dari Supabase secara paralel
-      const [projectsResponse, certificatesResponse] = await Promise.all([
+      // Mengambil data dari Supabase secara paralel dan independen
+      const [projectsResponse, certificatesResponse] = await Promise.allSettled([
         supabase.from("projects").select("*").order('id', { ascending: false }),
         supabase.from("certificates").select("*").order('id', { ascending: false }), 
       ]);
 
-      // Error handling untuk setiap request
-      if (projectsResponse.error) throw projectsResponse.error;
-      if (certificatesResponse.error) throw certificatesResponse.error;
+      if (projectsResponse.status === "fulfilled" && !projectsResponse.value.error) {
+        const projectData = projectsResponse.value.data || [];
+        setProjects(projectData);
+        localStorage.setItem("projects", JSON.stringify(projectData));
+      } else {
+        console.error("Error fetching projects from Supabase:", projectsResponse.value?.error || projectsResponse.reason);
+      }
 
-      // Supabase mengembalikan data dalam properti 'data'
-      const projectData = projectsResponse.data || [];
-      const certificateData = certificatesResponse.data || [];
-
-      setProjects(projectData);
-      setCertificates(certificateData);
-
-      // Store in localStorage (fungsionalitas ini tetap dipertahankan)
-      localStorage.setItem("projects", JSON.stringify(projectData));
-      localStorage.setItem("certificates", JSON.stringify(certificateData));
+      if (certificatesResponse.status === "fulfilled" && !certificatesResponse.value.error) {
+        const certificateData = certificatesResponse.value.data || [];
+        setCertificates(certificateData);
+        localStorage.setItem("certificates", JSON.stringify(certificateData));
+      } else {
+        console.error("Error fetching certificates from Supabase:", certificatesResponse.value?.error || certificatesResponse.reason);
+      }
     } catch (error) {
       console.error("Error fetching data from Supabase:", error.message);
     }
   }, []);
 
-
-
   useEffect(() => {
-    // Coba ambil dari localStorage dulu untuk laod lebih cepat
+    // Coba ambil dari localStorage dulu untuk load lebih cepat
     const cachedProjects = localStorage.getItem('projects');
     const cachedCertificates = localStorage.getItem('certificates');
 
-    if (cachedProjects && cachedCertificates) {
-        setProjects(JSON.parse(cachedProjects));
-        setCertificates(JSON.parse(cachedCertificates));
+    if (cachedProjects) {
+      try { setProjects(JSON.parse(cachedProjects)); } catch (e) {}
+    }
+    if (cachedCertificates) {
+      try { setCertificates(JSON.parse(cachedCertificates)); } catch (e) {}
     }
     
     fetchData(); // Tetap panggil fetchData untuk sinkronisasi data terbaru

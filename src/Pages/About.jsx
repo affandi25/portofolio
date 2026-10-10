@@ -1,5 +1,6 @@
-import React, { useEffect, memo, useMemo } from "react"
+import React, { useEffect, useState, memo, useMemo } from "react"
 import { FileText, Code, Award, GraduationCap, ArrowUpRight, Sparkles, UserCheck } from "lucide-react"
+import { supabase } from "../supabase"
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 
@@ -113,25 +114,45 @@ const StatCard = memo(({ icon: Icon, color, value, label, description, animation
 ));
 
 const AboutPage = () => {
-  // Memoized calculations
-  const { totalProjects, totalCertificates, currentSemester } = useMemo(() => {
-    const storedProjects = JSON.parse(localStorage.getItem("projects") || "[]");
-    const storedCertificates = JSON.parse(localStorage.getItem("certificates") || "[]");
+  const [totalProjects, setTotalProjects] = useState(() => {
+    return JSON.parse(localStorage.getItem("projects") || "[]").length;
+  });
+  const [totalCertificates, setTotalCertificates] = useState(() => {
+    return JSON.parse(localStorage.getItem("certificates") || "[]").length;
+  });
 
-    // Perhitungan semester otomatis (masuk 17 September 2024, 1 semester = 6 bulan)
+  // Perhitungan semester otomatis (masuk 17 September 2024, 1 semester = 6 bulan)
+  const currentSemester = useMemo(() => {
     const startDate = new Date("2024-09-17");
     const today = new Date();
     const diffInMonths =
       (today.getFullYear() - startDate.getFullYear()) * 12 +
       (today.getMonth() - startDate.getMonth()) -
       (today.getDate() < startDate.getDate() ? 1 : 0);
-    const semester = Math.max(1, Math.floor(diffInMonths / 6) + 1);
+    return Math.max(1, Math.floor(diffInMonths / 6) + 1);
+  }, []);
 
-    return {
-      totalProjects: storedProjects.length,
-      totalCertificates: storedCertificates.length,
-      currentSemester: semester,
+  useEffect(() => {
+    const fetchCounts = async () => {
+      try {
+        const [pRes, cRes] = await Promise.allSettled([
+          supabase.from("projects").select("id", { count: "exact" }),
+          supabase.from("certificates").select("id", { count: "exact" }),
+        ]);
+
+        if (pRes.status === "fulfilled" && !pRes.value.error) {
+          const count = pRes.value.count ?? pRes.value.data?.length ?? 0;
+          setTotalProjects(count);
+        }
+        if (cRes.status === "fulfilled" && !cRes.value.error) {
+          const count = cRes.value.count ?? cRes.value.data?.length ?? 0;
+          setTotalCertificates(count);
+        }
+      } catch (err) {
+        console.error("Error fetching stats:", err);
+      }
     };
+    fetchCounts();
   }, []);
 
   // Optimized AOS initialization
