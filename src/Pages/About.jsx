@@ -114,13 +114,23 @@ const StatCard = memo(({ icon: Icon, color, value, label, description, animation
 
 const AboutPage = () => {
   // Memoized calculations
-  const { totalProjects, totalCertificates } = useMemo(() => {
+  const { totalProjects, totalCertificates, currentSemester } = useMemo(() => {
     const storedProjects = JSON.parse(localStorage.getItem("projects") || "[]");
     const storedCertificates = JSON.parse(localStorage.getItem("certificates") || "[]");
+
+    // Perhitungan semester otomatis (masuk 17 September 2024, 1 semester = 6 bulan)
+    const startDate = new Date("2024-09-17");
+    const today = new Date();
+    const diffInMonths =
+      (today.getFullYear() - startDate.getFullYear()) * 12 +
+      (today.getMonth() - startDate.getMonth()) -
+      (today.getDate() < startDate.getDate() ? 1 : 0);
+    const semester = Math.max(1, Math.floor(diffInMonths / 6) + 1);
 
     return {
       totalProjects: storedProjects.length,
       totalCertificates: storedCertificates.length,
+      currentSemester: semester,
     };
   }, []);
 
@@ -169,12 +179,12 @@ const AboutPage = () => {
     {
       icon: GraduationCap,
       color: "from-[#6366f1] to-[#a855f7]",
-      value: "5th",
+      value: currentSemester,
       label: "Current Semester",
       description: "Active Student • Informatics Eng.",
       animation: "fade-left",
     },
-  ], [totalProjects, totalCertificates]);
+  ], [totalProjects, totalCertificates, currentSemester]);
 
   return (
     <div
