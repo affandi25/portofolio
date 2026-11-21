@@ -8,6 +8,7 @@ import About from "./Pages/About";
 import AnimatedBackground from "./components/Background";
 import { AnimatePresence } from "framer-motion";
 import Footer from "./components/Footer";
+import AIAssistant from "./components/AIAssistant";
 
 import Login from "./Pages/Login";
 import Dashboard from "./Pages/Dashboard";
@@ -41,6 +42,7 @@ const LandingPage = ({ showWelcome, setShowWelcome }) => {
             <ContactPage />
           </Suspense>
           <Footer />
+          <AIAssistant />
         </>
       )}
     </>
@@ -53,6 +55,7 @@ const ProjectPageLayout = () => (
       <ProjectDetails />
     </Suspense>
     <Footer />
+    <AIAssistant />
   </>
 );
 
